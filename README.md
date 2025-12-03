@@ -1,6 +1,6 @@
 ![alt text](https://github.com/thxlxn/SFEDIT/blob/main/fv4030as.png)
 # SFEDIT - Sprocket File EDITor
-I haven't compiled this into an .exe yet, so you can run it from your IDE or through the terminal. Just don't forget that the functions.py supplement to be in the same directory.
+I haven't compiled this into an .exe yet, so you can run it from your IDE or through the terminal. Just don't forget that the functions.py supplement has to be in the same directory.
 
 ## Thickness Editor
 Changes the armor thickness of every single face of the selected compartment/vehicle. The only practical usage for this is compartments with tiny geometry where setting the thickness below 5mm is not possible in-game.
