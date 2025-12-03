@@ -6,7 +6,7 @@ I haven't compiled this into an .exe yet, so you can run it from your IDE or thr
 Changes the armor thickness of every single face of the selected compartment/vehicle. The only practical usage for this is compartments with tiny geometry where setting the thickness below 5mm is not possible in-game.
 
 ## 3D Visualizer
-Tries to replicate the feature available in Sprocket's official Discord server but with the edition of a slider that let's you spin the output image.
+Tries to replicate the feature available in Sprocket's official Discord server but with the edition of a slider that lets you spin the output image.
 Do keep in mind that loading a **really heavy** blueprint can lead to your machine running out-of-memory. Be careful with this... <sub>or don't, that's up to you</sub>
 
 <sup>Discord: the_len</sup>
