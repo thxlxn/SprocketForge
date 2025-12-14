@@ -1,6 +1,11 @@
 ![alt text](https://github.com/thxlxn/SFEDIT/blob/main/fv4030as.png)
 # SFEDIT - Sprocket File EDITor
 I haven't compiled this into an .exe yet, so you can run it from your IDE or through the terminal. Just don't forget that the functions.py supplement has to be in the same directory.
+Plans include (but not limited to):
+- Advanced track and suspension modifications
+- Structure merging
+- Crew member modifications
+- Custom era creator
 
 ## Thickness Editor
 Changes the armor thickness of every single face of the selected compartment/vehicle. The only practical usage for this is compartments with tiny geometry where setting the thickness below 5mm is not possible in-game.
