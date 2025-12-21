@@ -1,4 +1,5 @@
-![image](https://github.com/thxlxn/SFEDIT/blob/main/fv4030as.png)
+
+![image](https://github.com/thxlxn/SFEDIT/blob/main/assets/fv4030as.png)
 # SFEDIT - Sprocket File EDITor
 I haven't compiled this into an .exe yet, so you can run it from your IDE or through the terminal. Just don't forget that the functions.py supplement has to be in the same directory.
 Plans include (but not limited to):

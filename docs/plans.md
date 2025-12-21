@@ -1,4 +1,5 @@
 - merge compartments
-- remove tracks (+ y/n option to remove suspension)
+- remove tracks (partially done)
 - adjust crewmember stats
 - era creator (maybe)
+- zip compiler (partially done)
