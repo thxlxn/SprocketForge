@@ -1,5 +1,7 @@
-
 ![image](https://github.com/thxlxn/SFEDIT/blob/main/assets/fv4030as.png)
+![License](https://img.shields.io/github/license/thxlxn/SFEDIT)
+![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
+![Issues](https://img.shields.io/github/issues/thxlxn/SFEDIT)
 # SFEDIT - Sprocket File EDITor
 I haven't compiled this into an .exe yet, so you can run it from your IDE or through the terminal. Just don't forget that the functions.py supplement has to be in the same directory.
 Plans include (but not limited to):
