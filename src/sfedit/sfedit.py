@@ -62,7 +62,7 @@ class SFEDIT(ctk.CTk):
         self.close_button.grid(row=4, column=0, padx=40, pady=(15, 40))
 
         # footer
-        self.version_label = ctk.CTkLabel(self, text="v0.03 | SFEDIT", text_color="gray")
+        self.version_label = ctk.CTkLabel(self, text="v0.3.1 | SFEDIT", text_color="gray")
         self.version_label.place(relx=0.5, rely=0.95, anchor="center")
 
     def open_thickness_window(self):
