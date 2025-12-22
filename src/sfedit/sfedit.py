@@ -41,26 +41,32 @@ class SFEDIT(ctk.CTk):
                                                  text="File Editor",
                                                  width=250, height=50, font=("Arial", 16), 
                                                  fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
-        self.thick_window_button.grid(row=1, column=0, padx=40, pady=15)
 
         self.render_window_button = ctk.CTkButton(self.menu_frame, command=self.open_render_window, 
                                                   text="3D Visualizer",
                                                   width=250, height=50, font=("Arial", 16), 
                                                   fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
-        self.render_window_button.grid(row=2, column=0, padx=40, pady=15)
 
         self.close_button = ctk.CTkButton(self.menu_frame, command=self.destroy, text="Exit", 
                                           width=250, height=50, font=("Arial", 16), 
                                           fg_color="#555555", hover_color="#777777")
-        self.close_button.grid(row=3, column=0, padx=40, pady=(15, 40))
         
         self.pack_window_button = ctk.CTkButton(self.menu_frame, command=self.open_pack_window, 
                                                 text="Blueprint Packager",
                                                 width=250, height=50, font=("Arial", 16), 
                                                 fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
-        self.pack_window_button.grid(row=3, column=0, padx=40, pady=15)
-
-        self.close_button.grid(row=4, column=0, padx=40, pady=(15, 40))
+        
+        self.era_creator_button = ctk.CTkButton(self.menu_frame, command = self.open_era_creator,
+                                                text="Era Creator",
+                                                width=250, height=50, font=("Arial", 16),
+                                                fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
+        
+        # buttons grid
+        self.thick_window_button.grid(row=1, column=0, padx=40, pady=15)
+        self.pack_window_button.grid(row=2, column=0, padx=40, pady=15)
+        self.era_creator_button.grid(row=3, column=0, padx=40, pady=15)
+        self.render_window_button.grid(row=4, column=0, padx=40, pady=15)
+        self.close_button.grid(row=5, column=0, padx=40, pady=(15, 40))
 
         # footer and version
         try:
@@ -71,8 +77,8 @@ class SFEDIT(ctk.CTk):
         self.version_label = ctk.CTkLabel(self, text=f"{current_version} | SFEDIT", text_color="gray")
         self.version_label.place(relx=0.5, rely=0.95, anchor="center")
 
+    # window status checks
     def open_thickness_window(self):
-        # check if it's already open
         if self.thickness_window is None or not self.thickness_window.winfo_exists():
             self.thickness_window = FileEditWindow(self)
         else:
@@ -87,6 +93,12 @@ class SFEDIT(ctk.CTk):
     def open_pack_window(self):
         if self.pack_window is None or not self.pack_window.winfo_exists():
             self.pack_window = PackWindow(self)
+        else:
+            self.pack_window.focus()
+
+    def open_era_creator(self):
+        if self.pack_window is None or not self.pack_window.winfo_exists():
+            self.pack_window = EraWindow(self)
         else:
             self.pack_window.focus()
 
@@ -467,6 +479,17 @@ class PackWindow(ctk.CTkToplevel):
             self.status_msg.configure(text=msg, text_color="#00FF00")
         else:
             self.status_msg.configure(text=msg, text_color="#FF4444")
+
+class EraWindow(ctk.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.title("Custom Era Creator")
+        self.geometry("900x1050") 
+        self.lift()
+        self.focus_force()
+        self.grab_set()
+
 
 if __name__ == "__main__":
     root = SFEDIT()
