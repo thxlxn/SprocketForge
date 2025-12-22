@@ -19,12 +19,48 @@ class SFEDIT(ctk.CTk):
         # main window setup
         self.title("Sprocket File Editor")
         self.geometry("800x600")
-        self.thickness_window = None
-        self.render_window = None
-        self.pack_window = None
+
+        # container setup
+        self.container = ctk.CTkFrame(self)
+        self.container.pack(side="top", fill="both", expand=True)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
         
+        self.frames = {}
+
+        # pages init
+        for F in (MainMenu, FileEditPage, RenderPage, PackPage, EraPage):
+            page_name = F.__name__
+            frame = F(parent=self.container, controller=self)
+            self.frames[page_name] = frame
+            # stack
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.show_frame("MainMenu")
+        self.add_footer()
+
+    def show_frame(self, page_name):
+        for frame in self.frames.values():
+            if hasattr(frame, "on_leave"):
+                frame.on_leave()
+                
+        frame = self.frames[page_name]
+        frame.tkraise()
+    
+    def add_footer(self):
+        try:
+            current_version = version("sfedit")
+        except PackageNotFoundError:
+            current_version = "dev"
+        self.version_label = ctk.CTkLabel(self.container, text=f"{current_version} | SFEDIT", text_color="gray", fg_color="transparent", padx = 10)
+        self.version_label.place(relx=0.5, rely=0.98, anchor="center")
+
+class MainMenu(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
 
         # menu container
         self.menu_frame = ctk.CTkFrame(self, corner_radius=15, width=400)
@@ -37,82 +73,41 @@ class SFEDIT(ctk.CTk):
         self.title_label.grid(row=0, column=0, padx=40, pady=(40, 20))
 
         # buttons
-        self.thick_window_button = ctk.CTkButton(self.menu_frame, command=self.open_thickness_window, 
+        self.thick_window_button = ctk.CTkButton(self.menu_frame, command=lambda: controller.show_frame("FileEditPage"), 
                                                  text="File Editor",
                                                  width=250, height=50, font=("Arial", 16), 
                                                  fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
 
-        self.render_window_button = ctk.CTkButton(self.menu_frame, command=self.open_render_window, 
-                                                  text="3D Visualizer",
-                                                  width=250, height=50, font=("Arial", 16), 
-                                                  fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
-
-        self.close_button = ctk.CTkButton(self.menu_frame, command=self.destroy, text="Exit", 
-                                          width=250, height=50, font=("Arial", 16), 
-                                          fg_color="#555555", hover_color="#777777")
-        
-        self.pack_window_button = ctk.CTkButton(self.menu_frame, command=self.open_pack_window, 
+        self.pack_window_button = ctk.CTkButton(self.menu_frame, command=lambda: controller.show_frame("PackPage"), 
                                                 text="Blueprint Packager",
                                                 width=250, height=50, font=("Arial", 16), 
                                                 fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
         
-        self.era_creator_button = ctk.CTkButton(self.menu_frame, command = self.open_era_creator,
+        self.era_creator_button = ctk.CTkButton(self.menu_frame, command=lambda: controller.show_frame("EraPage"),
                                                 text="Era Creator",
                                                 width=250, height=50, font=("Arial", 16),
                                                 fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
+
+        self.render_window_button = ctk.CTkButton(self.menu_frame, command=lambda: controller.show_frame("RenderPage"), 
+                                                  text="3D Visualizer",
+                                                  width=250, height=50, font=("Arial", 16), 
+                                                  fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
+
+        self.close_button = ctk.CTkButton(self.menu_frame, command=controller.destroy, text="Exit", 
+                                          width=250, height=50, font=("Arial", 16), 
+                                          fg_color="#555555", hover_color="#777777")
         
         # buttons grid
         self.thick_window_button.grid(row=1, column=0, padx=40, pady=15)
         self.pack_window_button.grid(row=2, column=0, padx=40, pady=15)
-        self.era_creator_button.grid(row=3, column=0, padx=40, pady=15)
-        self.render_window_button.grid(row=4, column=0, padx=40, pady=15)
+        self.render_window_button.grid(row=3, column=0, padx=40, pady=15)
+        self.era_creator_button.grid(row=4, column=0, padx=40, pady=15)
         self.close_button.grid(row=5, column=0, padx=40, pady=(15, 40))
 
-        # footer and version
-        try:
-            current_version = version("sfedit")
-        except PackageNotFoundError:
-            current_version = "dev"
-
-        self.version_label = ctk.CTkLabel(self, text=f"{current_version} | SFEDIT", text_color="gray")
-        self.version_label.place(relx=0.5, rely=0.95, anchor="center")
-
-    # window status checks
-    def open_thickness_window(self):
-        if self.thickness_window is None or not self.thickness_window.winfo_exists():
-            self.thickness_window = FileEditWindow(self)
-        else:
-            self.thickness_window.focus()
-
-    def open_render_window(self):
-        if self.render_window is None or not self.render_window.winfo_exists():
-            self.render_window = RenderWindow(self)
-        else:
-            self.render_window.focus()
-    
-    def open_pack_window(self):
-        if self.pack_window is None or not self.pack_window.winfo_exists():
-            self.pack_window = PackWindow(self)
-        else:
-            self.pack_window.focus()
-
-    def open_era_creator(self):
-        if self.pack_window is None or not self.pack_window.winfo_exists():
-            self.pack_window = EraWindow(self)
-        else:
-            self.pack_window.focus()
-
-
-class FileEditWindow(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # setup the popup window
-        self.title("File Editor")
-        self.geometry("700x750")
-        self.lift()
-        self.focus_force()
-        self.grab_set()
+class FileEditPage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
         
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -121,7 +116,7 @@ class FileEditWindow(ctk.CTkToplevel):
         self.top_bar = ctk.CTkFrame(self)
         self.top_bar.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
 
-        self.back_button = ctk.CTkButton(self.top_bar, command=self.destroy, text="<- Back",
+        self.back_button = ctk.CTkButton(self.top_bar, command=lambda: self.controller.show_frame("MainMenu"), text="<- Back",
                                          width=100, fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
         self.back_button.pack(side="left", padx=10, pady=5)
 
@@ -182,9 +177,9 @@ class FileEditWindow(ctk.CTkToplevel):
         self.opt_inv_tracks.pack(anchor="w", pady=5)
 
         # placeholder for next feature
-        # self.opt_wide_tracks_var = ctk.BooleanVar(value=False)
-        # self.opt_wide_tracks = ctk.CTkCheckBox(self.tracks_content, text="Wide Tracks", variable=self.opt_wide_tracks_var)
-        # self.opt_wide_tracks.pack(anchor="w", pady=5)
+        # self.opt_xyz = ctk.BooleanVar(value=False)
+        # self.opt_xyz = ctk.CTkCheckBox(self.tracks_content, text="xyz", variable=self.opt_xyz)
+        # self.opt_xyz.pack(anchor="w", pady=5)
 
         self.toggle_tracks_ui()
 
@@ -224,7 +219,7 @@ class FileEditWindow(ctk.CTkToplevel):
         self.thick_label.configure(text=f"{self.thickval} mm")
 
     def apply_changes(self):
-        # sanity check: did user actually tick anything?
+        # sanity check
         if not (self.use_thickness_var.get() or self.use_tracks_var.get()):
             self.status_label.configure(text="No options selected. Nothing to do.")
             return
@@ -248,15 +243,10 @@ class FileEditWindow(ctk.CTkToplevel):
         self.status_label.configure(text=msg)
 
 
-class RenderWindow(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.title("3D Wireframe Renderer")
-        self.geometry("900x1050") 
-        self.lift()
-        self.focus_force()
-        self.grab_set()
+class RenderPage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
 
         # anim state
         self.frames = []
@@ -271,7 +261,7 @@ class RenderWindow(ctk.CTkToplevel):
         self.controls_frame = ctk.CTkFrame(self)
         self.controls_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
 
-        self.back_button = ctk.CTkButton(self.controls_frame, command=self.close_window, text="<- Back",
+        self.back_button = ctk.CTkButton(self.controls_frame, command=lambda: self.controller.show_frame("MainMenu"), text="<- Back",
                                          fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER, width=100)
         self.back_button.pack(side="left", padx=5)
 
@@ -305,8 +295,6 @@ class RenderWindow(ctk.CTkToplevel):
                                           button_hover_color=COLOR_HOVER, progress_color=COLOR_PRIMARY)
         self.frame_slider.pack(side="left", fill="x", expand=True, padx=20, pady=10)
         self.frame_slider.set(0)
-
-        self.protocol("WM_DELETE_WINDOW", self.close_window)
 
     def load_and_render(self):
         filepath = filedialog.askopenfilename(title="Select .blueprint", filetypes=[("Blueprint files", "*.blueprint")])
@@ -384,22 +372,16 @@ class RenderWindow(ctk.CTkToplevel):
             self.after_cancel(self.animation_id)
             self.animation_id = None
 
-    def close_window(self):
+    def on_leave(self):
         self.stop_animation()
         if self.frames:
             self.frames.clear()
-            self.frames = None
-        self.destroy()
+            self.frames = []
 
-class PackWindow(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.title("Blueprint Packager")
-        self.geometry("700x500")
-        self.lift()
-        self.focus_force()
-        self.grab_set()
+class PackPage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -408,7 +390,7 @@ class PackWindow(ctk.CTkToplevel):
         self.top_bar = ctk.CTkFrame(self)
         self.top_bar.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
 
-        self.back_button = ctk.CTkButton(self.top_bar, command=self.destroy, text="<- Back",
+        self.back_button = ctk.CTkButton(self.top_bar, command=lambda: self.controller.show_frame("MainMenu"), text="<- Back",
                                          width=100, fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
         self.back_button.pack(side="left", padx=10, pady=5)
 
@@ -480,16 +462,24 @@ class PackWindow(ctk.CTkToplevel):
         else:
             self.status_msg.configure(text=msg, text_color="#FF4444")
 
-class EraWindow(ctk.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class EraPage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
 
-        self.title("Custom Era Creator")
-        self.geometry("900x1050") 
-        self.lift()
-        self.focus_force()
-        self.grab_set()
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
 
+        # --- Top Nav ---
+        self.top_bar = ctk.CTkFrame(self)
+        self.top_bar.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+
+        self.back_button = ctk.CTkButton(self.top_bar, command=lambda: self.controller.show_frame("MainMenu"), text="<- Back",
+                                         width=100, fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
+        self.back_button.pack(side="left", padx=10, pady=5)
+
+        self.wip_label = ctk.CTkLabel(self, text="nothing to see here yet...", text_color="gray", fg_color="transparent")
+        self.wip_label.place(relx = 0.5, rely = 0.5, anchor="center")
 
 if __name__ == "__main__":
     root = SFEDIT()
