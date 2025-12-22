@@ -2,7 +2,8 @@
 # SprocketForge
 ![License](https://img.shields.io/github/license/thxlxn/SprocketForge)
 ![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
-![Issues](https://img.shields.io/github/issues/thxlxn/SprocketForge) <br>
+![Issues](https://img.shields.io/github/issues/thxlxn/SprocketForge) 
+[![Python Quality Check](https://github.com/thxlxn/SprocketForge/actions/workflows/python-lint.yml/badge.svg)](https://github.com/thxlxn/SprocketForge/actions/workflows/python-lint.yml) <br>
 The universal tool for headache-less file editing in the popular video game Sprocket by Hamish Dunn.
 
 > This whole thing is obviously still in progress and I do not have any ETAs. I plan on rolling out random useful (or not) features whenever I have free time in-between uni stuff. Any feedback is highly appreciated as I am still learning >.< <br>
