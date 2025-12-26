@@ -2,7 +2,7 @@ import os
 import customtkinter as ctk
 from customtkinter import filedialog
 from importlib.metadata import version, PackageNotFoundError
-from .functions import generate_render_frames, edit_blueprint_file, pack_blueprint_for_sharing
+from .functions import generate_render_frames, edit_blueprint_file, pack_blueprint_for_sharing, generate_era_files
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")
@@ -463,23 +463,123 @@ class PackPage(ctk.CTkFrame):
             self.status_msg.configure(text=msg, text_color="#FF4444")
 
 class EraPage(ctk.CTkFrame):
+    import json
+import customtkinter as ctk
+
+class EraPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
+        self.entries = {}
+        self.sprocket_path = ""
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        # --- Top Nav ---
+        # --- Top Navigation ---
         self.top_bar = ctk.CTkFrame(self)
         self.top_bar.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+        
+        ctk.CTkButton(self.top_bar, text="<- Back", width=100, 
+                      command=lambda: self.controller.show_frame("MainMenu"),
+                      fg_color="#C59102", hover_color="#DDB74F").pack(side="left", padx=10)
+        
+        self.status_label = ctk.CTkLabel(self.top_bar, text="Configure your Era then select the Game Folder.")
+        self.status_label.pack(side="left", padx=10)
 
-        self.back_button = ctk.CTkButton(self.top_bar, command=lambda: self.controller.show_frame("MainMenu"), text="<- Back",
-                                         width=100, fg_color=COLOR_PRIMARY, hover_color=COLOR_HOVER)
-        self.back_button.pack(side="left", padx=10, pady=5)
+        # --- Main Scroll Area ---
+        self.scroll_frame = ctk.CTkScrollableFrame(self, label_text="Custom Era Settings")
+        self.scroll_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=(0, 10))
+        self.scroll_frame.grid_columnconfigure(0, weight=1)
 
-        self.wip_label = ctk.CTkLabel(self, text="nothing to see here yet...", text_color="gray", fg_color="transparent")
-        self.wip_label.place(relx = 0.5, rely = 0.5, anchor="center")
+        # DIRECTORY SELECTION
+        self.dir_frame = ctk.CTkFrame(self.scroll_frame, fg_color="#2B2B2B")
+        self.dir_frame.pack(fill="x", padx=10, pady=10)
+        
+        ctk.CTkLabel(self.dir_frame, text="GAME DIRECTORY SETTING", font=("Arial", 12, "bold"), text_color="#C59102").pack(pady=(5,0))
+        ctk.CTkLabel(self.dir_frame, text="Tip: Select the 'Sprocket' folder in steamapps/common.\nDo NOT use the folder in 'My Games'.", 
+                     font=("Arial", 11, "italic"), text_color="gray").pack(pady=5)
+        
+        self.path_label = ctk.CTkLabel(self.dir_frame, text="No folder selected", text_color="white")
+        self.path_label.pack(pady=2)
+        
+        ctk.CTkButton(self.dir_frame, text="Select Sprocket Folder", command=self.select_folder,
+                      fg_color="#555555", hover_color="#777777").pack(pady=10)
+
+        # Section Definitions
+        self.create_section("Basic Era Info", [
+            ("era_name", "Era Name", "Coldwar"),
+            ("start_date", "Start Date", "1945.09.03"),
+            ("med_mass", "Medium Mass", "18000"),
+            ("heavy_mass", "Heavy Mass", "36000")
+        ], "era")
+
+        self.create_section("Engine", [
+            ("torque_coeff", "Torque Coeff", "0.85"),
+            ("tech_factor", "Tech Factor", "0.8")
+        ], "engine")
+
+        self.create_section("Cannon", [
+            ("pressure", "Pressure", "40000"),
+            ("penetrator", "Penetrator", "1900"),
+            ("calibre", "Max Calibre", "100"),
+            ("propellant", "Max Propellant", "360"),
+            ("max_seg", "Max Segments", "20"),
+            ("min_seg", "Min Segments", "1")
+        ], "cannon")
+
+        self.create_section("Traverse Motor", [
+            ("resistance", "Resistance", "0.5"),
+            ("max_torque", "Max Torque", "1500"),
+            ("run_torque", "Running Torque", "800")
+        ], "traverse")
+
+        self.create_section("Misc Components", [
+            ("track_res", "Track Resistance", "1.25"),
+            ("max_gears", "Max Gears", "24")
+        ], "misc")
+
+        # --- Footer Save Button ---
+        self.save_button = ctk.CTkButton(self, text="Generate Era Files", 
+                                         height=50, command=self.save_all_files,
+                                         fg_color="#C59102", hover_color="#DDB74F",
+                                         state="disabled") # Disabled until path is chosen
+        self.save_button.grid(row=2, column=0, padx=20, pady=10, sticky="ew")
+
+    def create_section(self, title, fields, section_key):
+        frame = ctk.CTkFrame(self.scroll_frame)
+        frame.pack(fill="x", padx=10, pady=10)
+        frame.grid_columnconfigure(1, weight=1)
+        ctk.CTkLabel(frame, text=title.upper(), font=("Arial", 14, "bold"), text_color="#C59102").grid(row=0, column=0, columnspan=2, pady=5)
+        
+        for i, (key, label_text, default) in enumerate(fields, start=1):
+            ctk.CTkLabel(frame, text=label_text).grid(row=i, column=0, padx=10, pady=2, sticky="w")
+            entry = ctk.CTkEntry(frame, placeholder_text=default)
+            entry.grid(row=i, column=1, padx=10, pady=2, sticky="ew")
+            self.entries[key] = (entry, default)
+
+    def select_folder(self):
+        path = filedialog.askdirectory(title="Select your Sprocket Steam Folder")
+        if path:
+            self.sprocket_path = path
+            display_path = path if len(path) < 50 else f"...{path[-47:]}"
+            self.path_label.configure(text=display_path)
+            self.save_button.configure(state="normal") # Enable saving
+
+    def save_all_files(self):
+        if not self.sprocket_path:
+            self.status_label.configure(text="Error: Select game folder first!", text_color="#FF4444")
+            return
+
+        data_package = {}
+        for key, (entry, default) in self.entries.items():
+            val = entry.get()
+            data_package[key] = val if val else default
+
+        success, msg = generate_era_files(data_package, self.sprocket_path)
+        
+        color = "#00FF00" if success else "#FF4444"
+        self.status_label.configure(text=msg, text_color=color)
 
 if __name__ == "__main__":
     root = Core()

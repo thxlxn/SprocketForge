@@ -12,7 +12,7 @@ Plans include (but not limited to):
 - Advanced track and suspension modifications
 - Structure merging
 - Crew member modifications
-- Custom era creator
+- Vehicle modules painter
 
 ## 📏 Thickness Editor
 Changes the armor thickness of every single face of the selected compartment/vehicle. 
@@ -24,11 +24,10 @@ Do keep in mind that loading a **really heavy** blueprint can lead to your machi
 Be careful with this... <sub>or don't, that's up to you</sub>
 
 ## 📁 Blueprint Packager
-The packager lets the user upload .blueprint files, automatically retrieves all used local decals and packs them into a .zip file together for the blueprints.
-This allows for easy sharing of your blueprints without having to remember the decals you have used. 
-<sub>custom paint packaging is in progress</sub>
+The packager lets the user upload .blueprint files, automatically retrieves the paintjob and all used decals as long as they are local (Not from a web link) and packs them into a .zip file together with the blueprints.
+This allows for easy sharing of your blueprints without having to remember the assets you have used.
 
 ## 📅 Custom Era Creator
-TODO
+This automatically creates all the files needed for a custom era by taking user inputs. Please make sure you select the right directory in steamapps/common. I plan to add tooltips to each of the settings in eras but for now you may refer to the guides in the official Sprocket Discord server.
 
 <sup>Discord: the_len</sup>

@@ -371,3 +371,85 @@ def pack_blueprint_for_sharing(blueprint_path, sprocket_dir):
         
     except Exception as e:
         return False, f"Packaging error: {str(e)}"
+    
+
+# ==========================================
+# ERA CREATOR FUNCTIONS
+# ==========================================
+
+def generate_era_files(data_package, sprocket_path):
+    """
+    Writes 7 JSON files into the game's StreamingAssets folders.
+    """
+    try:
+        era_name = data_package.get("era_name", "CustomEra")
+        start_date = data_package.get("start_date", "1945.09.03")
+
+        # define paths
+        era_dir = os.path.join(sprocket_path, "Sprocket_Data", "StreamingAssets", "Eras")
+        tech_dir = os.path.join(sprocket_path, "Sprocket_Data", "StreamingAssets", "Technology")
+
+        # check directories
+        os.makedirs(era_dir, exist_ok=True)
+        os.makedirs(tech_dir, exist_ok=True)
+
+        # CORE ERA FILE
+        era_file_path = os.path.join(era_dir, f"{era_name}.json")
+        era_content = {
+            "v": "0.0", "name": era_name, "start": start_date, "playable": True,
+            "mediumVehicleMass": float(data_package.get("med_mass")),
+            "heavyVehicleMass": float(data_package.get("heavy_mass"))
+        }
+        
+        with open(era_file_path, 'w', encoding='utf-8') as f:
+            json.dump(era_content, f, indent=4)
+
+        # TECH FILES
+        tech_files = {
+            f"{era_name}Engine.json": {
+                "v": "0.0", "type": "combustionEngine", "date": start_date,
+                "properties": {
+                    "torqueCoefficient": float(data_package.get("torque_coeff")),
+                    "technologyFactor": float(data_package.get("tech_factor"))
+                }
+            },
+            f"{era_name}Cannon.json": {
+                "v": "0.0", "type": "cannon", "date": start_date,
+                "properties": {
+                    "operatingPressure": float(data_package.get("pressure")),
+                    "penetratorConstant": float(data_package.get("penetrator")),
+                    "calibre": float(data_package.get("calibre")),
+                    "propellantLength": float(data_package.get("propellant")),
+                    "maxSegmentCount": int(data_package.get("max_seg")),
+                    "minSegmentCount": int(data_package.get("min_seg"))
+                }
+            },
+            f"{era_name}TraverseMotor.json": {
+                "v": "0.0", "type": "traverseMotor", "date": start_date,
+                "properties": {
+                    "resistance": float(data_package.get("resistance")),
+                    "maxMotorTorque": float(data_package.get("max_torque")),
+                    "torque": float(data_package.get("run_torque"))
+                }
+            },
+            f"{era_name}Transmission.json": {
+                "v": "0.0", "type": "transmission", "date": start_date,
+                "properties": {"maxGearCount": int(data_package.get("max_gears"))}
+            },
+            f"{era_name}Track.json": {
+                "v": "0.0", "type": "trackAssembly", "date": start_date,
+                "properties": {"rollingResistance": float(data_package.get("track_res"))}
+            },
+            f"{era_name}Armour.json": {
+                "v": "0.0", "type": "armour", "date": start_date, "properties": {}
+            }
+        }
+
+        for filename, content in tech_files.items():
+            full_path = os.path.join(tech_dir, filename)
+            with open(full_path, 'w', encoding='utf-8') as f:
+                json.dump(content, f, indent=4)
+
+        return True, f"Success! Files saved to the game files."
+    except Exception as e:
+        return False, f"Export Error: {str(e)}"
