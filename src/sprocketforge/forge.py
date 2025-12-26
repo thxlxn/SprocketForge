@@ -33,7 +33,6 @@ class Core(ctk.CTk):
             page_name = F.__name__
             frame = F(parent=self.container, controller=self)
             self.frames[page_name] = frame
-            # stack
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame("MainMenu")
@@ -124,14 +123,11 @@ class FileEditPage(ctk.CTkFrame):
         self.status_label.pack(side="left", padx=10)
 
         # --- Scrollable Options List ---
-        # using a scrollable frame so i can add more stuff later
         self.options_frame = ctk.CTkScrollableFrame(self, label_text="Modification Options")
         self.options_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=(0, 20))
         self.options_frame.grid_columnconfigure(0, weight=1)
 
-        # ==================================================
-        # OPTION 1: ARMOR THICKNESS
-        # ==================================================
+        # ARMOR THICKNESS
         self.thick_frame = ctk.CTkFrame(self.options_frame)
         self.thick_frame.pack(fill="x", padx=10, pady=10)
 
@@ -152,12 +148,9 @@ class FileEditPage(ctk.CTkFrame):
         self.thick_slider.pack(pady=10)
         self.thick_slider.set(self.thickval)
 
-        # init state
         self.toggle_thickness_ui()
 
-        # ==================================================
-        # OPTION 2: TRACKS
-        # ==================================================
+        # TRACKS
         self.tracks_frame = ctk.CTkFrame(self.options_frame)
         self.tracks_frame.pack(fill="x", padx=10, pady=10)
 
@@ -171,15 +164,12 @@ class FileEditPage(ctk.CTkFrame):
         self.tracks_content = ctk.CTkFrame(self.tracks_frame, fg_color="transparent")
         self.tracks_content.pack(fill="x", padx=20, pady=(0, 10))
 
-        # Box 1: Invisible Tracks (guid swap)
+        # invisible tracks
         self.opt_inv_tracks_var = ctk.BooleanVar(value=False)
         self.opt_inv_tracks = ctk.CTkCheckBox(self.tracks_content, text="Invisible Tracks", variable=self.opt_inv_tracks_var)
         self.opt_inv_tracks.pack(anchor="w", pady=5)
 
-        # placeholder for next feature
-        # self.opt_xyz = ctk.BooleanVar(value=False)
-        # self.opt_xyz = ctk.CTkCheckBox(self.tracks_content, text="xyz", variable=self.opt_xyz)
-        # self.opt_xyz.pack(anchor="w", pady=5)
+        # len add more stuff here >:[
 
         self.toggle_tracks_ui()
 
@@ -238,7 +228,6 @@ class FileEditPage(ctk.CTkFrame):
             "invisible_tracks": self.opt_inv_tracks_var.get()
         }
 
-        # do the heavy lifting in functions.py
         success, msg = edit_blueprint_file(filepath, settings)
         self.status_label.configure(text=msg)
 
@@ -257,7 +246,7 @@ class RenderPage(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        # 1. controls
+        # controls
         self.controls_frame = ctk.CTkFrame(self)
         self.controls_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
 
@@ -272,14 +261,14 @@ class RenderPage(ctk.CTkFrame):
         self.status_label = ctk.CTkLabel(self.controls_frame, text="Select a file to begin.")
         self.status_label.pack(side="left", padx=10)
 
-        # 2. image display
+        # image display
         self.display_frame = ctk.CTkFrame(self)
         self.display_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=(0, 10))
 
         self.image_label = ctk.CTkLabel(self.display_frame, text="")
         self.image_label.pack(expand=True, fill="both", padx=10, pady=10)
 
-        # 3. playback controls
+        # playback controls
         self.playback_frame = ctk.CTkFrame(self)
         self.playback_frame.grid(row=2, column=0, sticky="ew", padx=10, pady=(0, 10))
 
@@ -307,7 +296,6 @@ class RenderPage(ctk.CTkFrame):
         self.stop_animation()
 
         try:
-            # generating frames takes a sec
             self.frames = generate_render_frames(filepath, size=800, frames_count=60)
             
             if not self.frames:
@@ -316,7 +304,6 @@ class RenderPage(ctk.CTkFrame):
 
             self.status_label.configure(text=f"Loaded: {os.path.basename(filepath)}")
             
-            # fix slider limits
             count = len(self.frames)
             self.frame_slider.configure(to=count - 1, number_of_steps=count - 1)
             self.frame_slider.set(0)
@@ -441,7 +428,6 @@ class PackPage(ctk.CTkFrame):
         path = filedialog.askdirectory(title="Select your Sprocket Game Folder")
         if path:
             self.sprocket_path = path
-            # Show the end of the path so it's readable
             display_path = path if len(path) < 40 else f"...{path[-37:]}"
             self.dir_status.configure(text=f"Path: {display_path}", text_color="white")
             self.pack_button.configure(state="normal")
@@ -461,10 +447,6 @@ class PackPage(ctk.CTkFrame):
             self.status_msg.configure(text=msg, text_color="#00FF00")
         else:
             self.status_msg.configure(text=msg, text_color="#FF4444")
-
-class EraPage(ctk.CTkFrame):
-    import json
-import customtkinter as ctk
 
 class EraPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -564,7 +546,7 @@ class EraPage(ctk.CTkFrame):
             self.sprocket_path = path
             display_path = path if len(path) < 50 else f"...{path[-47:]}"
             self.path_label.configure(text=display_path)
-            self.save_button.configure(state="normal") # Enable saving
+            self.save_button.configure(state="normal")
 
     def save_all_files(self):
         if not self.sprocket_path:

@@ -6,13 +6,12 @@ from PIL import Image
 import os
 import zipfile
 
-# --- SETTINGS ---
+# SETTINGS
 TARGET_FACE_COUNT = 15000 
 RENDER_SIZE = 800
 
-# ==========================================
-# RENDERING MATH (collapsed)
-# ==========================================
+# RENDERING MATH
+
 def get_rotation_matrix(rot):
     safe_rot = rot[:3]
     if len(safe_rot) < 3:
@@ -223,21 +222,16 @@ def generate_render_frames(filepath, size=600, frames_count=60):
     return pil_frames
 
 
-# ==========================================
+
 # FILE EDITING FUNCTIONS
-# ==========================================
 
 def recursive_thickness_update(data, target_thick):
     """Looks for the right thickness blocks and replaces their values"""
-    # Crawl the whole JSON tree to find "t": [...]
     if isinstance(data, dict):
         for key, value in data.items():
-            # found "t" list?
             if key == "t" and isinstance(value, list):
-                # preserve exact length, fill with new value
                 data[key] = [target_thick] * len(value)
             
-            # keep digging deeply
             elif isinstance(value, (dict, list)):
                 recursive_thickness_update(value, target_thick)
                 
@@ -247,20 +241,15 @@ def recursive_thickness_update(data, target_thick):
 
 def edit_blueprint_file(filepath, settings):
     try:
-        # Load safely as JSON
         with open(filepath, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
-        # ------------------------------------------
-        # 1. ARMOR THICKNESS (Global Recursive Fix)
-        # ------------------------------------------
+        # ARMOR THICKNESS
         if settings.get("use_thickness"):
             target_thick = settings.get("thickness_val", 5)
             recursive_thickness_update(data, target_thick)
 
-        # ------------------------------------------
-        # 2. TRACK OPTIONS
-        # ------------------------------------------
+        # TRACK OPTIONS
         if settings.get("use_tracks"):
             
             # Invisible Tracks
@@ -269,18 +258,12 @@ def edit_blueprint_file(filepath, settings):
                 
                 blueprints = data.get("blueprints", [])
                 for bp in blueprints:
-                    # Look for type "trackBelt"
                     if bp.get("type") == "trackBelt":
-                        # Safety check: ensure "blueprint" dict exists
                         if "blueprint" not in bp:
                             bp["blueprint"] = {}
                         
-                        # Apply the GUID to the inner blueprint data
                         bp["blueprint"]["segmentID"] = track_guid
 
-        # ------------------------------------------
-        # SAVE AS COPY
-        # ------------------------------------------
         base_dir = os.path.dirname(filepath)
         base_name = os.path.basename(filepath)
         name_only, ext = os.path.splitext(base_name)
@@ -297,9 +280,8 @@ def edit_blueprint_file(filepath, settings):
         return False, f"Error: {str(e)}"
     
 
-# ==========================================
 # BLUEPRINT SHARING FUNCTIONS
-# ==========================================
+
 def get_paint(blueprint_data):
 
     blueprints = blueprint_data.get("blueprints", [])
@@ -373,9 +355,7 @@ def pack_blueprint_for_sharing(blueprint_path, sprocket_dir):
         return False, f"Packaging error: {str(e)}"
     
 
-# ==========================================
 # ERA CREATOR FUNCTIONS
-# ==========================================
 
 def generate_era_files(data_package, sprocket_path):
     """
@@ -385,11 +365,9 @@ def generate_era_files(data_package, sprocket_path):
         era_name = data_package.get("era_name", "CustomEra")
         start_date = data_package.get("start_date", "1945.09.03")
 
-        # define paths
         era_dir = os.path.join(sprocket_path, "Sprocket_Data", "StreamingAssets", "Eras")
         tech_dir = os.path.join(sprocket_path, "Sprocket_Data", "StreamingAssets", "Technology")
 
-        # check directories
         os.makedirs(era_dir, exist_ok=True)
         os.makedirs(tech_dir, exist_ok=True)
 
