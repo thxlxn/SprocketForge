@@ -30,4 +30,13 @@ This allows for easy sharing of your blueprints without having to remember the a
 ## 📅 Custom Era Creator
 This automatically creates all the files needed for a custom era by taking user inputs. Please make sure you select the right directory in steamapps/common. I plan to add tooltips to each of the settings in eras but for now you may refer to the guides in the official Sprocket Discord server.
 
+## 🛠️ Building Yourself
+In case you wish to compile the executable yourself - with different settings or simply because you do not trust mine - you'll have to use **PyInstaller**. Don't forget to run `pip install -e .` in the root and then pass `--copy-metadata sprocketforge` as an argument to the compiler. <br>
+For example:<br>
+<pre>
+pip install -e .
+pyinstaller --onefile --noconsole --copy-metadata sprocketforge main.py
+</pre>
+
+### Contact<br>
 <sup>Discord: the_len</sup>
