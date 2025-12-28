@@ -14,9 +14,10 @@ Plans include (but not limited to):
 - Crew member modifications
 - Vehicle modules painter
 
-## 📏 Thickness Editor
-Changes the armor thickness of every single face of the selected compartment/vehicle. 
-The only practical usage for this is compartments with tiny geometry where setting the thickness below 5mm is not possible in-game.
+## 📏 File Editor
+Current options:
+- Change the armor thickness of every single face. Allows you to set the thickness value below 5mm for tiny geometry.
+- Make the tracks invisible
 
 ## 🖼️ 3D Visualizer
 Tries to replicate the feature available in Sprocket's official Discord server but with the edition of a slider that lets you spin the output image.
