@@ -502,10 +502,10 @@ class EraPage(ctk.CTkFrame):
         ], "engine")
 
         self.create_section("Cannon", [
-            ("pressure", "Pressure", "40000"),
-            ("penetrator", "Penetrator", "1900"),
-            ("calibre", "Max Calibre", "100"),
-            ("propellant", "Max Propellant", "360"),
+            ("pressure", "Pressure", "40000"), # increase for more velocity
+            ("penetrator", "Penetrator", "1900"), # decrease for more pen
+            ("calibre", "Calibre", "100"), # base setting
+            ("propellant", "Propellant", "360"), # base setting
             ("max_seg", "Max Segments", "20"),
             ("min_seg", "Min Segments", "1")
         ], "cannon")
